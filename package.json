@@ -1,0 +1,26 @@
+{
+  "name": "prototype-auth-upload-aws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canaantt/prototype-auth-upload-aws.git"
+  },
+  "author": "Jenny Zhang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/canaantt/prototype-auth-upload-aws/issues"
+  },
+  "homepage": "https://github.com/canaantt/prototype-auth-upload-aws#readme",
+  "dependencies": {
+    "amazon-cognito-auth-js": "^1.1.9",
+    "aws-sdk": "^2.224.1",
+    "express": "^4.16.3",
+    "lodash": "^4.17.5"
+  }
+}
