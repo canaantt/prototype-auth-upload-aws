@@ -65,7 +65,7 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            var userPoolId = 'us-west-2_r6hgLkf0o';
+            var userPoolId = 'us-west-2_7jPSeH5Rn';
             var userPoolClientId = '1akumpo5etkim7pgi3flvosjl6';
             var userPoolARN = 'arn:aws:cognito-idp:us-west-2:179462354929:userpool/us-west-2_7jPSeH5Rn';
             var userIdentityId = 'us-west-2:4bcfca78-67ae-4117-8191-e40cdf742cfc';
@@ -78,9 +78,7 @@
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
             };
-            // var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
 
             // FUNCTIONS
             function register(email, password, onSuccess, onFailure) {
@@ -120,8 +118,8 @@
 
                 var cognitoUser = createCognitoUser(email);
                 cognitoUser.authenticateUser(authenticationDetails, {
-                    onSuccess: onSuccess,
-                    onFailure: onFailure
+                    onSuccess: function(){console.log("SUCCESS!")},
+                    onFailure: function(){console.log("Failed...")}
                 });
             };
 
@@ -149,6 +147,7 @@
             function handleSignin(event) {
                 var email = $('#emailInputSignin').val();
                 var password = $('#passwordInputSignin').val();
+                console.log('test 1');
                 // event.preventDefault();
                 signin(email, password,
                     function signinSuccess() {
@@ -162,8 +161,6 @@
             };
 
             function handleRegister(event) {
-                console.log('am I here?');
-                debugger;
                 var email = $('#emailInputRegister').val();
                 var password = $('#passwordInputRegister').val();
                 var password2 = $('#password2InputRegister').val();
