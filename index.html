@@ -9,8 +9,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.224.1/aws-sdk.js"></script>
         <script src="./aws-cognito-sdk.js"></script>
         <script src="./amazon-cognito-identity.js"></script>
-        <!-- <script src="./amazon-cognito-identity.min.js.map"></script>
-        <script scr="./aws-cognito-sdk.min.js.map"></script> -->
         <title>
             Prototype AWS Cognito + API Gateway + Lambda + DynamoDB + S3
         </title>
@@ -24,22 +22,21 @@
                   <input type="email" id="emailInputRegister" placeholder="Email" pattern=".*" required>
                   <input type="password" id="passwordInputRegister" placeholder="Password" pattern=".*" required>
                   <input type="password" id="password2InputRegister" placeholder="Confirm Password" pattern=".*" required>
-    
                   <input type="submit" value="Register">
                 </form>
             </section>
         </div>
         <div class="well-big">
-            <section class="form-wrap" onsubmit="handleVerify()">
+            <section class="form-wrap">
                 <h1>Verify Email</h1>
-                <form id="verifyForm">
+                <form id="verifyForm" onsubmit="handleVerify()">
                   <input type="email" id="emailInputVerify" placeholder="Email" required>
                   <input type="text" id="codeInputVerify" placeholder="Verification Code" pattern=".*" required>
-    
                   <input type="submit" value="Verify">
                 </form>
             </section>
         </div>
+        <hr>
         <div class="well-big">
             <section class="form-wrap">
                 <h1>Sign In</h1>
@@ -56,7 +53,23 @@
         </div>
         <div class="well-big">
             <h1>Assign User Group</h1>
-            <button>User Group</button>
+            <select onchange="assignUserToGroup(this.value)"> 
+                <option value="admin">Admin</option>
+                <option value="readwrite">Read And Write</option>
+                <option value="readonly">Read Only</option>
+            </select>
+        </div>
+        <hr>
+        <div class="well-big">
+            <section class="form-wrap">
+                <h1>Add A New Dataset</h1>
+                <form id="addDatasetForm" onsubmit="addDataset()">
+                  <input type="name" id="nameInputAddDataset" placeholder="Name" required>
+                  <input type="description" id="passwordInputAddDataset" placeholder="Description" pattern=".*" required>
+                  <input type="annotation" id="annotationInputAddDataset" placeholder="Annotation" pattern=".*" required>
+                  <input type="submit" value="Sign in">
+                </form>
+            </section>
         </div>
         <div class="well-big">
             <h1>Upload File</h1>
@@ -69,17 +82,27 @@
             var userPoolClientId = '1akumpo5etkim7pgi3flvosjl6';
             var userPoolARN = 'arn:aws:cognito-idp:us-west-2:179462354929:userpool/us-west-2_7jPSeH5Rn';
             var userIdentityId = 'us-west-2:4bcfca78-67ae-4117-8191-e40cdf742cfc';
-
-            AWS.config.region = 'us-west-2'; // Region
-            // AWS.config.credentials = new AmazonCognitoIdentityCredentials({
-            //     IdentityPoolId: userIdentityId,
-            // });
+            AWS.config.region = 'us-west-2';  
+            AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
+                IdentityPoolId: userIdentityId
+            });
             var poolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
             };
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+            var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
+            const Groups = {
+                'admin': 'admin',
+                'readonly': 'readonly',
+                'readwrite': 'readwrite'
+            };
 
+            // State Variables
+            var auth;
+            var sessionInfo;
+            var userName;
+            var groupsAndRoles;
             // FUNCTIONS
             function register(email, password, onSuccess, onFailure) {
                 var dataEmail = {
@@ -118,13 +141,23 @@
 
                 var cognitoUser = createCognitoUser(email);
                 cognitoUser.authenticateUser(authenticationDetails, {
-                    onSuccess: function(){console.log("SUCCESS!")},
-                    onFailure: function(){console.log("Failed...")}
+                    onSuccess: function(au){
+                        console.log("SUCCESS!");
+                        console.log(au);
+                        auth = au;
+                        userName = auth.getIdToken().payload['cognito:username'];
+                        groupsAndRoles = getUserGroup(cognitoUser);
+                        },
+                    onFailure: function(err){
+                        console.log("Failed...");
+                        alert(err);
+                        }
                 });
             };
 
-            function signOut() {
+            function signOut(event) {
                 userPool.getCurrentUser().signOut();
+                auth = null;
             };
 
             function createCognitoUser(email) {
@@ -148,16 +181,8 @@
                 var email = $('#emailInputSignin').val();
                 var password = $('#passwordInputSignin').val();
                 console.log('test 1');
-                // event.preventDefault();
-                signin(email, password,
-                    function signinSuccess() {
-                        console.log('Successfully Logged In');
-                        // window.location.href = 'ride.html';
-                    },
-                    function signinError(err) {
-                        alert(err);
-                    }
-                );
+                event.preventDefault();
+                signin(email, password);
             };
 
             function handleRegister(event) {
@@ -212,6 +237,40 @@
                     data = e.target.result;
                     if(!rABS) data = new Uint8Array(data);
                 }
+            };
+
+            function getUserGroup(cognitoUser){
+                var groups;
+                var roles;
+                cognitoUser.getSession(function(err, session) {
+                            if (err) {
+                               alert(err);
+                                return;
+                            }
+                            console.log('session validity: ' + session.isValid());
+                            console.dir(session.getIdToken().payload);
+                            sessionInfo = session.getIdToken().payload;
+                            groups = sessionInfo['cognito:groups'];
+                            console.log("Groups this user belongs to: " + groups);
+                            roles = sessionInfo['cognito:roles'];
+                            console.log("Roles this user owns :" + roles);
+                            
+                });
+                return {"groups": groups,
+                        "roles": roles};
+            };
+            
+                
+            function assignUserToGroup(value) {
+                var params = {
+                    GroupName: value, /* required */
+                    UserPoolId: userPoolId, /* required */
+                    Username: userName /* required */
+                };
+                cognitoidentityserviceprovider.adminAddUserToGroup(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                    });
             };
 
             input_dom_element.addEventListener('change', handleFile, false);
