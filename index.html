@@ -78,38 +78,29 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            var userPoolId = 'us-west-2_7jPSeH5Rn';
-            var userPoolClientId = '1akumpo5etkim7pgi3flvosjl6';
-            var userPoolARN = 'arn:aws:cognito-idp:us-west-2:179462354929:userpool/us-west-2_7jPSeH5Rn';
-            var userIdentityId = 'us-west-2:4bcfca78-67ae-4117-8191-e40cdf742cfc';
             AWS.config.region = 'us-west-2';  
             AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
-            var poolData = {
+            const poolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
             };
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-            const Groups = {
-                'admin': 'admin',
-                'readonly': 'readonly',
-                'readwrite': 'readwrite'
-            };
-
+            const userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
+            
             // State Variables
             var auth;
             var sessionInfo;
             var userName;
             var groupsAndRoles;
+            var token;
+            var bucket;
             // FUNCTIONS
             function register(email, password, onSuccess, onFailure) {
                 var dataEmail = {
                     Name: 'email',
                     Value: email
                 };
-                debugger;
                 var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 
                 userPool.signUp(toUsername(email), password, [attributeEmail], null,
@@ -140,14 +131,39 @@
                 });
 
                 var cognitoUser = createCognitoUser(email);
+                console.log("first user:", cognitoUser);
+                // var cognitoUser = userPool.getCurrentUser();
+                // console.log("second user:", cognitoUser);
+                
                 cognitoUser.authenticateUser(authenticationDetails, {
-                    onSuccess: function(au){
+                    onSuccess: function(au){ 
                         console.log("SUCCESS!");
-                        console.log(au);
-                        auth = au;
-                        userName = auth.getIdToken().payload['cognito:username'];
-                        groupsAndRoles = getUserGroup(cognitoUser);
-                        },
+                        cognitoUser.getSession(function(err, session) {
+                            if (err) {
+                                alert(err);
+                                return;
+                            } else {
+                                console.log('session validity: ' + session.isValid());
+                                sessionInfo = session.getIdToken().payload;
+                                groups = sessionInfo['cognito:groups'];
+                                console.log("Groups this user belongs to: " + groups);
+                                roles = sessionInfo['cognito:roles'];
+                                console.log("Roles this user owns :" + roles);
+                                token = session.getIdToken().getJwtToken();
+
+                                // Instantiate aws sdk service objects now that the credentials have been updated.
+                                // example: var s3 = new AWS.S3();
+                                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                                                    IdentityPoolId : userIdentityId,
+                                                    Logins : {
+                                                        // Change the key below according to the specific region your user pool is in.
+                                                        'cognito-idp.us-west-2.amazonaws.com/us-west-2_LEfNJo2J7' : token
+                                                    }
+                                                });
+                                console.log('token', token);
+                            }
+                        });
+                    },
                     onFailure: function(err){
                         console.log("Failed...");
                         alert(err);
@@ -238,29 +254,7 @@
                     if(!rABS) data = new Uint8Array(data);
                 }
             };
-
-            function getUserGroup(cognitoUser){
-                var groups;
-                var roles;
-                cognitoUser.getSession(function(err, session) {
-                            if (err) {
-                               alert(err);
-                                return;
-                            }
-                            console.log('session validity: ' + session.isValid());
-                            console.dir(session.getIdToken().payload);
-                            sessionInfo = session.getIdToken().payload;
-                            groups = sessionInfo['cognito:groups'];
-                            console.log("Groups this user belongs to: " + groups);
-                            roles = sessionInfo['cognito:roles'];
-                            console.log("Roles this user owns :" + roles);
-                            
-                });
-                return {"groups": groups,
-                        "roles": roles};
-            };
-            
-                
+       
             function assignUserToGroup(value) {
                 var params = {
                     GroupName: value, /* required */
@@ -272,8 +266,40 @@
                     else     console.log(data);           // successful response
                     });
             };
+            
+            function upload2S3(e) {
+                console.log('in upload2S3 function');
+                var s3 = new AWS.S3();
+                bucket = new AWS.S3({
+                    params: {
+                        Bucket: 'user-data-oncoscape'
+                    }
+                });
+                const file = e.target.files[0];
+                console.log('test');
+                const params = {
+                    Key: file.name + "_" + Date.now(),
+                    ContentType: file.type,
+                    Body: file
+                };
+                console.log('test1');
+                debugger;
+                bucket.putObject(params, function (err, data) {
+                    console.log('What am I seeing here...');
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('success!');
+                    }
+                });
+            };
+            input_dom_element.addEventListener('change', upload2S3, false);
 
-            input_dom_element.addEventListener('change', handleFile, false);
+            function addNewDataset(dataset_json){
+
+
+            }
         </script>
     </body>
 </html>
+
