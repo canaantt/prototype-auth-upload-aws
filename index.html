@@ -78,6 +78,11 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
+            const userPoolId = 'us-west-2_LEfNJo2J7';
+            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
+            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
+            const api_gateway_url = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod/projects';
+            const bucket_name = 'user-data-oncoscape';
             AWS.config.region = 'us-west-2';  
             AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
@@ -95,6 +100,7 @@
             var groupsAndRoles;
             var token;
             var bucket;
+            var project_id;
             // FUNCTIONS
             function register(email, password, onSuccess, onFailure) {
                 var dataEmail = {
@@ -102,8 +108,8 @@
                     Value: email
                 };
                 var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
-
-                userPool.signUp(toUsername(email), password, [attributeEmail], null,
+                userName = toUsername(email);
+                userPool.signUp(userName, password, [attributeEmail], null,
                     function signUpCallback(err, result) {
                         if (!err) {
                             onSuccess(result);
@@ -269,36 +275,81 @@
             
             function upload2S3(e) {
                 console.log('in upload2S3 function');
-                var s3 = new AWS.S3();
                 bucket = new AWS.S3({
                     params: {
-                        Bucket: 'user-data-oncoscape'
+                        Bucket: bucket_name
                     }
                 });
                 const file = e.target.files[0];
-                console.log('test');
                 const params = {
                     Key: file.name + "_" + Date.now(),
                     ContentType: file.type,
                     Body: file
                 };
-                console.log('test1');
-                debugger;
                 bucket.putObject(params, function (err, data) {
-                    console.log('What am I seeing here...');
                     if (err) {
                         console.log(err);
                     } else {
                         console.log('success!');
                     }
                 });
+                var dataset_metadata = {
+                    "DatasetFile_filename": params.Key,
+                    "DataCompliance_Protocol": "IRB",
+                    "httpMethod": "PUT",
+                    "DatasetName": "From Client After uploading file",
+                    "path":"/projects",
+                    "PrivateStatus": true,
+                    "DataCompliance_HumanStudy": "no",
+                    "DatasetAuthor": userName,
+                    "DatasetDescription": "Using Lambda to Add to DynamoDB",
+                    "PHI": false,
+                    "DatasetFile_size": file.size
+                };
+                addNewDataset(api_gateway_url, dataset_metadata, token);
             };
             input_dom_element.addEventListener('change', upload2S3, false);
 
-            function addNewDataset(dataset_json){
+            function addNewDataset(api_gateway_url, data, token) {
+                return fetch(api_gateway_url, {
+                        body: JSON.stringify(data), // must match 'Content-Type' header
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, same-origin, *omit
+                        headers: {
+                        'Authorization': token,
+                        'content-type': 'application/json'
+                        },
+                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        mode: 'cors', // no-cors, cors, *same-origin
+                        redirect: 'follow', // manual, *follow, error
+                        referrer: 'no-referrer', // *client, no-referrer
+                    }).then(response => response.json()).then(function(response) {
+                        console.log(response);
+                        project_id = JSON.parse(response.body);
+                        // change file keys with a subdirectory
+                        var oldKey = data['DatasetFile_filename'];
+                        var newKey = project_id + '/'+ oldKey;
+                        changeFileKeys(oldKey, newKey);
+                        // create policies and roles
+                        // assign author self with admin role for this project
+                        // assign/revoke collaborators with any role
+                    });
+            };
 
+            function changeFileKeys(oldKey, newKey){
+                var params = {
+                    Bucket: bucket_name,
+                    CopySource: bucket_name + '/' + oldKey, 
+                    Key: newKey
+                };
+                var s3 = new AWS.S3();
+                s3.copyObject(params, function(err, data) {
+                    debugger;
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            };
 
-            }
         </script>
     </body>
 </html>
