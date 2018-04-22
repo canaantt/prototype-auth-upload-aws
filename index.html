@@ -78,7 +78,13 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-             AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
+            const userPoolId = 'us-west-2_LEfNJo2J7';
+            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
+            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
+            const api_gateway_url = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod/projects';
+            const bucket_name = 'user-data-oncoscape';
+            AWS.config.region = 'us-west-2';  
+            AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
             const poolData = {
@@ -276,7 +282,7 @@
                 });
                 const file = e.target.files[0];
                 const params = {
-                    Key: file.name + "_" + Date.now(),
+                    Key: file.name.replace(".xlsx", "-" + Date.now()+".xlsx"),
                     ContentType: file.type,
                     Body: file
                 };
@@ -320,10 +326,11 @@
                     }).then(response => response.json()).then(function(response) {
                         console.log(response);
                         project_id = JSON.parse(response.body);
+                        // SQS 
                         // change file keys with a subdirectory
-                        var oldKey = data['DatasetFile_filename'];
-                        var newKey = project_id + '/'+ oldKey;
-                        changeFileKeys(oldKey, newKey);
+                        // var oldKey = data['DatasetFile_filename'];
+                        // var newKey = project_id + '/'+ oldKey;
+                        // changeFileKeys(oldKey, newKey);
                         // create policies and roles
                         // assign author self with admin role for this project
                         // assign/revoke collaborators with any role
