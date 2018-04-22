@@ -78,13 +78,7 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            const userPoolId = 'us-west-2_LEfNJo2J7';
-            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
-            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
-            const api_gateway_url = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod/projects';
-            const bucket_name = 'user-data-oncoscape';
-            AWS.config.region = 'us-west-2';  
-            AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
+             AWS.config.credentials = new this.AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
             const poolData = {
@@ -291,22 +285,22 @@
                         console.log(err);
                     } else {
                         console.log('success!');
+                        var dataset_metadata = {
+                            "DatasetFile_filename": params.Key,
+                            "DataCompliance_Protocol": "IRB",
+                            "httpMethod": "PUT",
+                            "DatasetName": "From Client After uploading file",
+                            "path":"/projects",
+                            "PrivateStatus": true,
+                            "DataCompliance_HumanStudy": "no",
+                            "DatasetAuthor": userName,
+                            "DatasetDescription": "Using Lambda to Add to DynamoDB",
+                            "PHI": false,
+                            "DatasetFile_size": file.size
+                        };
+                        addNewDataset(api_gateway_url, dataset_metadata, token);
                     }
                 });
-                var dataset_metadata = {
-                    "DatasetFile_filename": params.Key,
-                    "DataCompliance_Protocol": "IRB",
-                    "httpMethod": "PUT",
-                    "DatasetName": "From Client After uploading file",
-                    "path":"/projects",
-                    "PrivateStatus": true,
-                    "DataCompliance_HumanStudy": "no",
-                    "DatasetAuthor": userName,
-                    "DatasetDescription": "Using Lambda to Add to DynamoDB",
-                    "PHI": false,
-                    "DatasetFile_size": file.size
-                };
-                addNewDataset(api_gateway_url, dataset_metadata, token);
             };
             input_dom_element.addEventListener('change', upload2S3, false);
 
