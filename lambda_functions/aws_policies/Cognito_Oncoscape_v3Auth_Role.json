@@ -1,0 +1,51 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "mobileanalytics:PutEvents",
+                "cognito-sync:*",
+                "cognito-identity:*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:POST"
+            ],
+            "Resource": "arn:aws:apigateway:*::/restapis/*/authorizers",
+            "Condition": {
+                "ArnLike": {
+                    "apigateway:CognitoUserPoolProviderArn": [
+                        "arn:aws:cognito-idp:us-west-2:179462354929:userpool/us-west-2_7jPSeH5Rn"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:PATCH"
+            ],
+            "Resource": "arn:aws:apigateway:*::/restapis/*/authorizers/*",
+            "Condition": {
+                "ArnLike": {
+                    "apigateway:CognitoUserPoolProviderArn": [
+                        "arn:aws:cognito-idp:us-west-2:179462354929:userpool/us-west-2_7jPSeH5Rn"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect":"Allow",
+            "Action":[
+               "s3:PutObject"
+            ],
+            "Resource":"arn:aws:s3:::user-data-oncoscape/"
+         }
+    ]
+}

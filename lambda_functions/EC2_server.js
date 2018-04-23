@@ -1,7 +1,6 @@
 const XLSX =require("xlsx");
 const _ = require('lodash');
 const zlib = require('zlib');
-const express = require('express');
 const awsCli = require('aws-cli-js');
 const Options = awsCli.Options;
 const AWSCLI = awsCli.Aws;
@@ -76,7 +75,7 @@ const json2S3 = (msg) => {
     // Upload Sheets To S3 (Specific)
     var s3UploadConfig = {
         region: 'us-west-2',
-        params: {Bucket:'oncoscape-users-data'}
+        params: {Bucket:'oncoscape-users-data/' + projectID}
     }
     uploadResults = sheetsSerialized.map(sheet => save.server(sheet, projectID, s3UploadConfig, AWS, s3, zlib));
    
