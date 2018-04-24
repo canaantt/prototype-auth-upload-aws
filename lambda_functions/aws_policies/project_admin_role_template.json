@@ -1,16 +1,38 @@
 {
-    "Version":"2012-10-17",
-    "Statement":[
-       {
-          "Effect":"Allow",
-          "Action":[
-             "s3:PutObject",
-             "s3:GetObject",
-             "s3:GetObjectVersion",
-             "s3:DeleteObject",
-             "s3:DeleteObjectVersion"
-          ],
-          "Resource":"arn:aws:s3:::user-data-oncoscape/3ef70ae0-4730-11e8-a963-ebc7be41f894/*"
-       }
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:GetId",
+                "s3:ListAllMyBuckets",
+                "cognito-identity:SetIdentityPoolRoles",
+                "cognito-identity:ListIdentityPools",
+                "cognito-identity:CreateIdentityPool",
+                "cognito-identity:UnlinkIdentity",
+                "cognito-identity:DeleteIdentities",
+                "cognito-identity:GetOpenIdToken",
+                "s3:HeadBucket",
+                "s3:ListObjects",
+                "cognito-identity:DescribeIdentity",
+                "cognito-identity:GetCredentialsForIdentity"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:*",
+                "s3:*",
+                "cognito-idp:*"
+            ],
+            "Resource": [
+                "arn:aws:cognito-identity:us-west-2::identitypool/arn:aws:cognito-identity:us-west-2:179462354929:identitypool/us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6",
+                "arn:aws:cognito-idp:::userpool/us-west-2_LEfNJo2J7",
+                "arn:aws:s3:::oncoscape-user-data"
+            ]
+        }
     ]
- }
+}

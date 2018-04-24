@@ -9,6 +9,7 @@ const awscli = new AWSCLI();
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 const sqs = new AWS.SQS();
+AWS.config.region = 'us-west-2';
 
 var genemap = require('./data_uploading_modules/DatasetGenemap.json');
 var requirements = require('./data_uploading_modules/DatasetRequirements.json');

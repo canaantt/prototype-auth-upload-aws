@@ -93,6 +93,7 @@
                 ClientId: userPoolClientId
             };
             const userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
+            const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
             const iam = new AWS.IAM();
             // State Variables
             var auth;
@@ -261,19 +262,7 @@
                     if(!rABS) data = new Uint8Array(data);
                 }
             };
-       
-            function assignUserToGroup(value) {
-                var params = {
-                    GroupName: value, /* required */
-                    UserPoolId: userPoolId, /* required */
-                    Username: userName /* required */
-                };
-                cognitoidentityserviceprovider.adminAddUserToGroup(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                    });
-            };
-            
+        
             function upload2S3(e) {
                 console.log('in upload2S3 function');
                 bucket = new AWS.S3({
@@ -337,42 +326,10 @@
                         // assign/revoke collaborators with any role
                     });
             };
-
-            function changeFileKeys(oldKey, newKey) {
-                var params = {
-                    Bucket: bucket_name,
-                    CopySource: bucket_name + '/' + oldKey, 
-                    Key: newKey
-                };
-                var s3 = new AWS.S3();
-                s3.copyObject(params, function(err, data) {
-                    debugger;
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            };
             
-            function createPolicy(project_id, priviledge) {
-                const AWS_ACCT_ID = '179462354929';
+            function createPolicy(policy, project_id, priviledge) {
                 var policy_name = project_id + "_" + priviledge;
-                var role_name = policy_name;
-                // create user-defined policy
-                var role_policy = {
-                                    "Version":"2012-10-17",
-                                    "Statement":[
-                                    {
-                                        "Effect":"Allow",
-                                        "Action":[
-                                            "s3:PutObject",
-                                            "s3:GetObject",
-                                            "s3:GetObjectVersion",
-                                            "s3:DeleteObject",
-                                            "s3:DeleteObjectVersion"
-                                        ],
-                                        "Resource":"arn:aws:s3:::user-data-oncoscape/" + project_id + "/*"
-                                    }
-                                    ]
-                                };
+                var role_policy = policy;
                 var params_policy = {
                     PolicyDocument: JSON.stringify(role_policy),
                     PolicyName: policy_name
@@ -381,43 +338,125 @@
                     if (err) console.log(err, err.stack); // an error occurred
                     else     console.log(data);           // successful response
                 });
+            }
 
-                // create role 
-                var policy = {
-                                "Version": "2012-10-17",
-                                "Statement": {
-                                    "Effect": "Allow",
-                                    "Principal": {"Service": "s3.amazonaws.com"},
-                                    "Action": "sts:AssumeRole"
-                                }
-                            };
+            function createRole(trust_policy, project_id, priviledge) {
+                var role_name = project_id + "_" + priviledge;
                 var params_role = {
-                    AssumeRolePolicyDocument:JSON.stringify(policy),
-                    RoleName: "TEST_TEST"
+                    AssumeRolePolicyDocument:JSON.stringify(trust_policy),
+                    RoleName: role_name
                 };
-
                 iam.createRole(params_role, function(err, data) {
                     if (err) console.log(err, err.stack); // an error occurred
                     else     console.log(data);
                 });
+            }
 
-                // Attach user-defined policy to role 
+            function AttachPolicy2Role(aws_account_id, role_name) {
                 var params = {
-                    PolicyArn: "arn:aws:iam::" + AWS_ACCT_ID + ":policy/" + role_name, 
-                    RoleName: "TEST_TEST"
+                    PolicyArn: "arn:aws:iam::" + aws_account_id + ":policy/" + role_name, 
+                    RoleName: aws_account_id
                 };
-
                 iam.attachRolePolicy(params, function(err, data) {
                     if (err) console.log(err, err.stack); // an error occurred
                     else     console.log(data);           // successful response
                 });
-
             }
 
+            function detachPolicyFromRole(role_name){
+                var policy_arn = "arn:aws:iam::" + aws_account_id + ":policy/" + policy_name;
+                var params = {
+                    PolicyArn: policy_arn, /* required */
+                    RoleName: role_name /* required */
+                };
+                iam.detachRolePolicy(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            }
 
-            function createRoles() {
-                
+            function deleteRole(role_name){
+                var params = {
+                    RoleName: role_name
+                };
+                iam.deleteRole(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            }
+
+            function deletePolicy(aws_account_id, policy_name) {
+                var policy_arn = "arn:aws:iam::" + aws_account_id + ":policy/" + policy_name;
+                var params = {
+                    PolicyArn: policy_arn /* required */
+                };
+                iam.deletePolicy(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+                });
+            }
+
+            function createCognitoGroup(project_id, aws_account_id, user_pool_id, priviledge) {
+                var policy_name = project_id + "_" + priviledge;
+                var group_name = policy_name;
+                var role_name = policy_name;
+                var role_arn = "arn:aws:iam::" + aws_account_id + ":role/" + role_name;
+                var params = {
+                    GroupName: group_name,
+                    UserPoolId: user_pool_id,
+                    RoleArn: role_arn
+                };
+                cognitoidentityserviceprovider.createGroup(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                }); 
             };
+
+            function deleteCognitoGroup(group_name, user_pool_id){
+                var params = {
+                    GroupName: group_name, /* required */
+                    UserPoolId: user_pool_id /* required */
+                };
+                cognitoidentityserviceprovider.deleteGroup(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            }
+
+            function assignGroup2User(group_name, user_pool_id, user_name) {
+                var params = {
+                    GroupName: group_name, /* required */
+                    UserPoolId: user_pool_id, /* required */
+                    Username: user_name /* required */
+                };
+                cognitoidentityserviceprovider.adminAddUserToGroup(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            };
+
+            function removeGroupFromUser(group_name, user_pool_id, user_name){
+                var params = {
+                    GroupName: group_name, /* required */
+                    UserPoolId: user_pool_id, /* required */
+                    Username: user_name /* required */
+                };
+                cognitoidentityserviceprovider.adminRemoveUserFromGroup(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                });
+            }
+
+            function listUsersInGroup(group_name, user_pool_id) {
+                var params = {
+                    GroupName: group_name, /* required */
+                    UserPoolId: user_pool_id /* required */
+                };
+                cognitoidentityserviceprovider.listUsersInGroup(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+                });
+            }
         </script>
     </body>
 </html>
