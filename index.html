@@ -4,9 +4,10 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="google-signin-scope" content="profile email">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
         <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.0-rc.2/jquery-ui.min.js" integrity="sha256-55Jz3pBCF8z9jBO1qQ7cIf0L+neuPTD1u7Ytzrp2dqo=" crossorigin="anonymous"></script>
-        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.224.1/aws-sdk.js"></script> -->
         <script src="./aws-cognito-sdk.js"></script>
         <script src="./amazon-cognito-identity.js"></script>
         <script src="./aws-sdk-2.225.1.js"></script>
@@ -48,6 +49,8 @@
                 </form>
             </section>
         </div>
+        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+        <button onclick="googleSignOut()">Sign Out</button>
         <div class="well-big">
             <h1>Sign Out</h1>
             <button onclick="signOut()">Sign Out</button>
@@ -79,12 +82,6 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            const userPoolId = 'us-west-2_LEfNJo2J7';
-            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
-            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
-            const api_gateway_url = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod/projects';
-            const bucket_name = 'user-data-oncoscape';
-            AWS.config.region = 'us-west-2';  
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
@@ -93,7 +90,6 @@
                 ClientId: userPoolClientId
             };
             const userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
-            const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
             const iam = new AWS.IAM();
             // State Variables
             var auth;
@@ -201,6 +197,7 @@
                 $('#registrationForm').submit(handleRegister);
                 $('#verifyForm').submit(handleVerify);
             });
+
             function handleSignin(event) {
                 var email = $('#emailInputSignin').val();
                 var password = $('#passwordInputSignin').val();
@@ -263,6 +260,58 @@
                 }
             };
         
+            vargoogleAuth;
+            function onSignIn(googleUser) {
+                // Useful data for your client-side scripts:
+                var profile = googleUser.getBasicProfile();
+                console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+                console.log('Full Name: ' + profile.getName());
+                console.log('Given Name: ' + profile.getGivenName());
+                console.log('Family Name: ' + profile.getFamilyName());
+                console.log("Image URL: " + profile.getImageUrl());
+                console.log("Email: " + profile.getEmail());
+
+                // The ID token you need to pass to your backend:
+               googleAuth = googleUser.getAuthResponse();
+                var id_token = googleUser.getAuthResponse().id_token;
+                console.log("ID Token: " + id_token);
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: userIdentityId,
+                    Logins: {
+                    'accounts.google.com':googleAuth['id_token']
+                    }
+                });
+                AWS.config.credentials.get(function(){
+                        // Access AWS resources here.
+                        console.log('am I here???');
+                        console.log(AWS.config.credentials);
+                    });
+            };
+
+            function googleSignOut() {
+                gapi.auth2.getAuthInstance().signOut().then(function () {
+                    console.log('User signed out.');
+                });
+            }
+
+            function signinCallback(authResult) {
+                if (authResult['status']['signed_in']) {
+
+                    // Add the Google access token to the Cognito credentials login map.
+                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: userIdentityId,
+                        Logins: {
+                        'accounts.google.com':googleAuth['id_token']
+                        }
+                    });
+
+                    // Obtain AWS credentials
+                    AWS.config.credentials.get(function(){
+                        // Access AWS resources here.
+                    });
+                }
+            };
+
             function upload2S3(e) {
                 console.log('in upload2S3 function');
                 bucket = new AWS.S3({
@@ -424,6 +473,7 @@
             }
 
             function assignGroup2User(group_name, user_pool_id, user_name) {
+                var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
                 var params = {
                     GroupName: group_name, /* required */
                     UserPoolId: user_pool_id, /* required */
