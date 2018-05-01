@@ -6,98 +6,66 @@
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="google-signin-scope" content="profile email">
         <meta name="google-signin-client_id" content="459144121975-lp2p5kahpqahm2gffgtl31vv0nes9hj4.apps.googleusercontent.com">
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.0-rc.2/jquery-ui.min.js" integrity="sha256-55Jz3pBCF8z9jBO1qQ7cIf0L+neuPTD1u7Ytzrp2dqo=" crossorigin="anonymous"></script>
-        <script src="./aws-cognito-sdk.js"></script>
-        <script src="./amazon-cognito-identity.js"></script>
-        <script src="./aws-sdk-2.225.1.js"></script>
+        <script type="text/javascript" src="https://apis.google.com/js/platform.js" async defer></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0-rc.2/jquery-ui.min.js" integrity="sha256-55Jz3pBCF8z9jBO1qQ7cIf0L+neuPTD1u7Ytzrp2dqo=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="./aws-lib/aws-cognito-sdk.js"></script>
+        <script type="text/javascript" src="./aws-lib/amazon-cognito-identity.js"></script>
+        <script type="text/javascript" src="./aws-lib/aws-sdk-2.225.1.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/axios/dist/axios.standalone.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/CryptoJS/rollups/sha256.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/CryptoJS/components/hmac.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/CryptoJS/components/enc-base64.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/url-template/url-template.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/lib/apiGatewayCore/utils.js"></script>
+        <script type="text/javascript" src="aws-lib/apiGateway-js-sdk/apigClient.js"></script>
         <title>
             Prototype AWS Cognito + API Gateway + Lambda + DynamoDB + S3
         </title>
     </head>
     <body>
         <h1>Prototype AWS Cognito + API Gateway + Lambda + DynamoDB + S3</h1>
-        <div class="well-big">
-            <section class="form-wrap">
-                <h1>Register</h1>
-                <form id="registrationForm" onsubmit="handleRegister()">
-                  <input type="email" id="emailInputRegister" placeholder="Email" pattern=".*" required>
-                  <input type="password" id="passwordInputRegister" placeholder="Password" pattern=".*" required>
-                  <input type="password" id="password2InputRegister" placeholder="Confirm Password" pattern=".*" required>
-                  <input type="submit" value="Register">
-                </form>
-            </section>
-        </div>
-        <div class="well-big">
-            <section class="form-wrap">
-                <h1>Verify Email</h1>
-                <form id="verifyForm" onsubmit="handleVerify()">
-                  <input type="email" id="emailInputVerify" placeholder="Email" required>
-                  <input type="text" id="codeInputVerify" placeholder="Verification Code" pattern=".*" required>
-                  <input type="submit" value="Verify">
-                </form>
-            </section>
+        <hr>
+        <div class="well">
+            <h1>Sign In with Google Account</h1>
+            <div class="g-signin2" data-onsuccess="login" data-theme="dark"></div>
+            <button onclick="googleSignOut()">Sign Out</button>
         </div>
         <hr>
-        <div class="well-big">
-            <section class="form-wrap">
-                <h1>Sign In</h1>
-                <form id="signinForm" onsubmit="handleSignin()">
-                  <input type="email" id="emailInputSignin" placeholder="Email" required>
-                  <input type="password" id="passwordInputSignin" placeholder="Password" pattern=".*" required>
-                  <input type="submit" value="Sign in">
-                </form>
-            </section>
-        </div>
-        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-        <button onclick="googleSignOut()">Sign Out</button>
-        <div class="well-big">
-            <h1>Sign Out</h1>
-            <button onclick="signOut()">Sign Out</button>
-        </div>
-        <div class="well-big">
-            <h1>Assign User Group</h1>
-            <select onchange="assignUserToGroup(this.value)"> 
-                <option value="admin">Admin</option>
-                <option value="readwrite">Read And Write</option>
-                <option value="readonly">Read Only</option>
-            </select>
-        </div>
-        <hr>
-        <div class="well-big">
+        <div class="well">
             <section class="form-wrap">
                 <h1>Add A New Dataset</h1>
                 <form id="addDatasetForm" onsubmit="addDataset()">
                   <input type="name" id="nameInputAddDataset" placeholder="Name" required>
                   <input type="description" id="passwordInputAddDataset" placeholder="Description" pattern=".*" required>
                   <input type="annotation" id="annotationInputAddDataset" placeholder="Annotation" pattern=".*" required>
-                  <input type="submit" value="Sign in">
+                  <input type="submit" value="Create A New Dataset">
                 </form>
             </section>
         </div>
-        <div class="well-big">
+        <div class="well">
             <h1>Upload File</h1>
             <input type='file' id='input_dom_element'></input>
         </div>
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            const userPoolId = 'us-west-2_LEfNJo2J7';
-            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
-            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
-            const api_gateway_url = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod/projects';
             const bucket_name = 'user-data-oncoscape';
-            AWS.config.region = 'us-west-2';  
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: userIdentityId
-            });
             const poolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
             };
+            AWS.config.region = 'us-west-2';  
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: userIdentityId
+            });
             const userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
             const iam = new AWS.IAM();
+            const apigateway = new AWS.APIGateway();
             // State Variables
             var auth;
             var sessionInfo;
@@ -106,182 +74,17 @@
             var token;
             var bucket;
             var project_id;
+            var user = {};
+            var apigClient; 
             // FUNCTIONS
-            function register(email, password, onSuccess, onFailure) {
-                var dataEmail = {
-                    Name: 'email',
-                    Value: email
-                };
-                var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
-                userName = toUsername(email);
-                userPool.signUp(userName, password, [attributeEmail], null,
-                    function signUpCallback(err, result) {
-                        if (!err) {
-                            onSuccess(result);
-                        } else {
-                            onFailure(err);
-                        }
-                    }
-                );
-            };
-
-            function verify(email, code, onSuccess, onFailure) {
-                createCognitoUser(email).confirmRegistration(code, true, function confirmCallback(err, result) {
-                    if (!err) {
-                        onSuccess(result);
-                    } else {
-                        onFailure(err);
-                    }
-                });
-            };
-
-            function signin(email, password, onSuccess, onFailure) {
-                var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-                    Username: toUsername(email),
-                    Password: password
-                });
-
-                var cognitoUser = createCognitoUser(email);
-                console.log("first user:", cognitoUser);
-                // var cognitoUser = userPool.getCurrentUser();
-                // console.log("second user:", cognitoUser);
-                
-                cognitoUser.authenticateUser(authenticationDetails, {
-                    onSuccess: function(au){ 
-                        console.log("SUCCESS!");
-                        cognitoUser.getSession(function(err, session) {
-                            if (err) {
-                                alert(err);
-                                return;
-                            } else {
-                                console.log('session validity: ' + session.isValid());
-                                sessionInfo = session.getIdToken().payload;
-                                groups = sessionInfo['cognito:groups'];
-                                console.log("Groups this user belongs to: " + groups);
-                                roles = sessionInfo['cognito:roles'];
-                                console.log("Roles this user owns :" + roles);
-                                token = session.getIdToken().getJwtToken();
-
-                                // Instantiate aws sdk service objects now that the credentials have been updated.
-                                // example: var s3 = new AWS.S3();
-                                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                                                    IdentityPoolId : userIdentityId,
-                                                    Logins : {
-                                                        // Change the key below according to the specific region your user pool is in.
-                                                        'cognito-idp.us-west-2.amazonaws.com/us-west-2_LEfNJo2J7' : token
-                                                    }
-                                                });
-                                console.log('token', token);
-                            }
-                        });
-                    },
-                    onFailure: function(err){
-                        console.log("Failed...");
-                        alert(err);
-                        }
-                });
-            };
-
-            function signOut(event) {
-                userPool.getCurrentUser().signOut();
-                auth = null;
-            };
-
-            function createCognitoUser(email) {
-                return new AmazonCognitoIdentity.CognitoUser({
-                    Username: toUsername(email),
-                    Pool: userPool
-                });
-            };
-
-            function toUsername(email) {
-                return email.replace('@', '-at-');
-            };
-
-            // Event Handlers
-            $(function onDocReady() {
-                $('#signinForm').submit(handleSignin);
-                $('#registrationForm').submit(handleRegister);
-                $('#verifyForm').submit(handleVerify);
-            });
-
-            function handleSignin(event) {
-                var email = $('#emailInputSignin').val();
-                var password = $('#passwordInputSignin').val();
-                console.log('test 1');
-                event.preventDefault();
-                signin(email, password);
-            };
-
-            function handleRegister(event) {
-                var email = $('#emailInputRegister').val();
-                var password = $('#passwordInputRegister').val();
-                var password2 = $('#password2InputRegister').val();
-                
-                console.log('in handleRegister...');
-                var onSuccess = function registerSuccess(result) {
-                    var cognitoUser = result.user;
-                    console.log('user name is ' + cognitoUser.getUsername());
-                    var confirmation = ('Registration successful. Please check your email inbox or spam folder for your verification code.');
-                    if (confirmation) {
-                        console.log('==============> Registered....');
-                        // window.location.href = 'verify.html';
-                    }
-                };
-                var onFailure = function registerFailure(err) {
-                    alert(err);
-                };
-                event.preventDefault();
-
-                if (password === password2) {
-                    register(email, password, onSuccess, onFailure);
-                } else {
-                    alert('Passwords do not match');
-                }
-            };
-
-            function handleVerify(event) {
-                var email = $('#emailInputVerify').val();
-                var code = $('#codeInputVerify').val();
-                event.preventDefault();
-                verify(email, code,
-                    function verifySuccess(result) {
-                        console.log('call result: ' + result);
-                        console.log('Successfully verified');
-                        alert('Verification successful. You will now be redirected to the login page.');
-                        console.log('==============> Verified....');
-                        // window.location.href = signinUrl;
-                    },
-                    function verifyError(err) {
-                        alert(err);
-                    }
-                );
-            };
-
-            function handleFile(e) {
-                var files = e.target.files, f = files[0];
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    data = e.target.result;
-                    if(!rABS) data = new Uint8Array(data);
-                }
-            };
-        
-            vargoogleAuth;
-            function onSignIn(googleUser) {
+            function login(googleUser) {
                 // Useful data for your client-side scripts:
-                var profile = googleUser.getBasicProfile();
-                console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-                console.log('Full Name: ' + profile.getName());
-                console.log('Given Name: ' + profile.getGivenName());
-                console.log('Family Name: ' + profile.getFamilyName());
-                console.log("Image URL: " + profile.getImageUrl());
-                console.log("Email: " + profile.getEmail());
-
+                user['google_profile'] = googleUser.getBasicProfile();
                 // The ID token you need to pass to your backend:
-               googleAuth = googleUser.getAuthResponse();
+                googleAuth = googleUser.getAuthResponse();
                 var id_token = googleUser.getAuthResponse().id_token;
                 console.log("ID Token: " + id_token);
+                user['oauthToken'] = googleAuth['id_token'];
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                     IdentityPoolId: userIdentityId,
                     Logins: {
@@ -289,10 +92,16 @@
                     }
                 });
                 AWS.config.credentials.get(function(){
-                        // Access AWS resources here.
-                        console.log('am I here???');
-                        console.log(AWS.config.credentials);
-                    });
+                    user['sessionToken'] = AWS.config.credentials.data.Credentials.SessionToken;
+                    user['aws'] = AWS.config.credentials.data.Credentials;
+                    user['IdentityId'] = AWS.config.credentials.cognito.config.params.IdentityId;
+                    apigClient = apigClientFactory.newClient({
+                                accessKey: AWS.config.credentials.accessKeyId,
+                                secretKey: AWS.config.credentials.secretAccessKey,
+                                sessionToken: AWS.config.credentials.sessionToken,
+                                region: 'us-west-2'
+                            });
+                }); 
             };
 
             function googleSignOut() {
@@ -300,24 +109,6 @@
                     console.log('User signed out.');
                 });
             }
-
-            function signinCallback(authResult) {
-                if (authResult['status']['signed_in']) {
-
-                    // Add the Google access token to the Cognito credentials login map.
-                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                        IdentityPoolId: userIdentityId,
-                        Logins: {
-                        'accounts.google.com':googleAuth['id_token']
-                        }
-                    });
-
-                    // Obtain AWS credentials
-                    AWS.config.credentials.get(function(){
-                        // Access AWS resources here.
-                    });
-                }
-            };
 
             function upload2S3(e) {
                 console.log('in upload2S3 function');
@@ -338,182 +129,85 @@
                     } else {
                         console.log('success!');
                         var dataset_metadata = {
-                            "DatasetFile_filename": params.Key,
-                            "DataCompliance_Protocol": "IRB",
-                            "httpMethod": "PUT",
-                            "DatasetName": "From Client After uploading file",
-                            "path":"/projects",
-                            "PrivateStatus": true,
-                            "DataCompliance_HumanStudy": "no",
-                            "DatasetAuthor": userName,
-                            "DatasetDescription": "Using Lambda to Add to DynamoDB",
-                            "PHI": false,
-                            "DatasetFile_size": file.size
+                            "datsetName": "<DatasetName>",
+                            "datasetDesc": "<Description>",
+                            "datasetOwnerEmail": user.google_profile.U3, 
+                            "datasetFileSize": file.size,
+                            "datasetFileName": params.Key,
+                            "datasetContainsPhi": false,
+                            "datasetContainsHumanSubjects": true,
+                            "datasetProtocolType": "<IRB>", 
+                            "datasetProtocolId": "<FH7776>",
+                            "datasetPublic": false
                         };
-                        addNewDataset(api_gateway_url, dataset_metadata, token);
+                        addNewDataset(dataset_metadata);
                     }
                 });
             };
             input_dom_element.addEventListener('change', upload2S3, false);
 
-            function addNewDataset(api_gateway_url, data, token) {
-                return fetch(api_gateway_url, {
-                        body: JSON.stringify(data), // must match 'Content-Type' header
-                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                        credentials: 'same-origin', // include, same-origin, *omit
-                        headers: {
-                        'Authorization': token,
-                        'content-type': 'application/json'
-                        },
-                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                        mode: 'cors', // no-cors, cors, *same-origin
-                        redirect: 'follow', // manual, *follow, error
-                        referrer: 'no-referrer', // *client, no-referrer
-                    }).then(response => response.json()).then(function(response) {
-                        console.log(response);
-                        project_id = JSON.parse(response.body);
-                        // SQS 
-                        // change file keys with a subdirectory
-                        // var oldKey = data['DatasetFile_filename'];
-                        // var newKey = project_id + '/'+ oldKey;
-                        // changeFileKeys(oldKey, newKey);
-                        // create policies and roles
-                        // assign author self with admin role for this project
-                        // assign/revoke collaborators with any role
+            function addNewDataset(data) {
+                console.log("function addNewDataset is being called......");
+                
+                var params = {
+                               
+                            };
+
+
+                var additionalParams = {
+                    // If there are any unmodeled query parameters or headers that must be
+                    //   sent with the request, add them here.
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.projectsPost({}, data, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
                     });
+
+                // return fetch(api_gateway_url_projects, {
+                //         body: JSON.stringify(data), // must match 'Content-Type' header
+                //         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                //         credentials: 'same-origin', // include, same-origin, *omit
+                //         headers: {
+                //             // 'Authorization': user['awsAccessToken'],
+                //             'content-type': 'application/json'
+                //         },
+                //         method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                //         mode: 'cors', // no-cors, cors, *same-origin
+                //         redirect: 'follow', // manual, *follow, error
+                //         referrer: 'no-referrer', // *client, no-referrer
+                //     }).then(response => response.json()).then(function(response) {
+                //         console.log(response);
+                //         project_id = JSON.parse(response.body);
+                //     });
+            };
+
+            function updateDataset() {
+
+            };
+
+            function deleteDataset() {
+
             };
             
-            function createPolicy(policy, project_id, priviledge) {
-                var policy_name = project_id + "_" + priviledge;
-                var role_policy = policy;
-                var params_policy = {
-                    PolicyDocument: JSON.stringify(role_policy),
-                    PolicyName: policy_name
-                };
-                iam.createPolicy(params_policy, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
+            function addNewPermission() {
 
-            function createRole(trust_policy, project_id, priviledge) {
-                var role_name = project_id + "_" + priviledge;
-                var params_role = {
-                    AssumeRolePolicyDocument:JSON.stringify(trust_policy),
-                    RoleName: role_name
-                };
-                iam.createRole(params_role, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);
-                });
-            }
-
-            function AttachPolicy2Role(aws_account_id, role_name) {
-                var params = {
-                    PolicyArn: "arn:aws:iam::" + aws_account_id + ":policy/" + role_name, 
-                    RoleName: aws_account_id
-                };
-                iam.attachRolePolicy(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
-
-            function detachPolicyFromRole(role_name){
-                var policy_arn = "arn:aws:iam::" + aws_account_id + ":policy/" + policy_name;
-                var params = {
-                    PolicyArn: policy_arn, /* required */
-                    RoleName: role_name /* required */
-                };
-                iam.detachRolePolicy(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
-
-            function deleteRole(role_name){
-                var params = {
-                    RoleName: role_name
-                };
-                iam.deleteRole(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
-
-            function deletePolicy(aws_account_id, policy_name) {
-                var policy_arn = "arn:aws:iam::" + aws_account_id + ":policy/" + policy_name;
-                var params = {
-                    PolicyArn: policy_arn /* required */
-                };
-                iam.deletePolicy(params, function(err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else     console.log(data);           // successful response
-                });
-            }
-
-            function createCognitoGroup(project_id, aws_account_id, user_pool_id, priviledge) {
-                var policy_name = project_id + "_" + priviledge;
-                var group_name = policy_name;
-                var role_name = policy_name;
-                var role_arn = "arn:aws:iam::" + aws_account_id + ":role/" + role_name;
-                var params = {
-                    GroupName: group_name,
-                    UserPoolId: user_pool_id,
-                    RoleArn: role_arn
-                };
-                cognitoidentityserviceprovider.createGroup(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                }); 
             };
 
-            function deleteCognitoGroup(group_name, user_pool_id){
-                var params = {
-                    GroupName: group_name, /* required */
-                    UserPoolId: user_pool_id /* required */
-                };
-                cognitoidentityserviceprovider.deleteGroup(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
+            function updatePermission() {
 
-            function assignGroup2User(group_name, user_pool_id, user_name) {
-                var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-                var params = {
-                    GroupName: group_name, /* required */
-                    UserPoolId: user_pool_id, /* required */
-                    Username: user_name /* required */
-                };
-                cognitoidentityserviceprovider.adminAddUserToGroup(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
             };
 
-            function removeGroupFromUser(group_name, user_pool_id, user_name){
-                var params = {
-                    GroupName: group_name, /* required */
-                    UserPoolId: user_pool_id, /* required */
-                    Username: user_name /* required */
-                };
-                cognitoidentityserviceprovider.adminRemoveUserFromGroup(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                });
-            }
+            function deletePermission() {
 
-            function listUsersInGroup(group_name, user_pool_id) {
-                var params = {
-                    GroupName: group_name, /* required */
-                    UserPoolId: user_pool_id /* required */
-                };
-                cognitoidentityserviceprovider.listUsersInGroup(params, function(err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else     console.log(data);           // successful response
-                });
-            }
+            };
+
         </script>
     </body>
 </html>
