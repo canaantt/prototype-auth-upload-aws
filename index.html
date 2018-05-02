@@ -54,7 +54,6 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
-            const bucket_name = 'user-data-oncoscape';
             const poolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
@@ -131,7 +130,8 @@
                         var dataset_metadata = {
                             "datsetName": "<DatasetName>",
                             "datasetDesc": "<Description>",
-                            "datasetOwnerEmail": user.google_profile.U3, 
+                            // "datasetOwnerEmail": user.google_profile.U3, 
+                            "datasetOwnerId": user.IdentityId,
                             "datasetFileSize": file.size,
                             "datasetFileName": params.Key,
                             "datasetContainsPhi": false,
@@ -148,17 +148,8 @@
 
             function addNewDataset(data) {
                 console.log("function addNewDataset is being called......");
-                
-                var params = {
-                               
-                            };
-
-
                 var additionalParams = {
-                    // If there are any unmodeled query parameters or headers that must be
-                    //   sent with the request, add them here.
                     headers: {
-                        'Access-Control-Allow-Origin': '*',
                         'Content-Type': 'application/json'
                     },
                     queryParams: {}
@@ -169,24 +160,55 @@
                     }).catch( function(result){
                         console.log('catch +++', result);
                     });
-
-                // return fetch(api_gateway_url_projects, {
-                //         body: JSON.stringify(data), // must match 'Content-Type' header
-                //         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                //         credentials: 'same-origin', // include, same-origin, *omit
-                //         headers: {
-                //             // 'Authorization': user['awsAccessToken'],
-                //             'content-type': 'application/json'
-                //         },
-                //         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                //         mode: 'cors', // no-cors, cors, *same-origin
-                //         redirect: 'follow', // manual, *follow, error
-                //         referrer: 'no-referrer', // *client, no-referrer
-                //     }).then(response => response.json()).then(function(response) {
-                //         console.log(response);
-                //         project_id = JSON.parse(response.body);
-                //     });
             };
+
+            function listAllDatasets(userId) {
+                console.log("function listAllDatasets is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.projectsGet({}, {'userId': userId}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            }
+
+            function listOneDataset(projectId) {
+                console.log("function listOneDataset is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.projectsGet({}, {'projectId': projectId}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            }
+
+            function deleteDataset(projectId) {
+                console.log("function deleteDataset is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.projectsProjectIdDelete({}, {"projectId": projectId}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            }
 
             function updateDataset() {
 

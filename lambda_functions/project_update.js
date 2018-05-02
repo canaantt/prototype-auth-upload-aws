@@ -65,7 +65,7 @@ exports.updateItemById = function(event, context, callback){
     var params = {
         TableName:process.env.TABLE_NAME,
         Key:{
-            "_id": event['queryStringParameters']['id']
+            "_id": event['queryStringParameters']['projectId']
         },
         AttributeUpdates: attributeUpdatesObj,
         TableName: process.env.TABLE_NAME,

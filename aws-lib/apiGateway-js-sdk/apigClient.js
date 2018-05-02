@@ -53,7 +53,7 @@ apigClientFactory.newClient = function (config) {
 
     
     // extract endpoint and path from url
-    var invokeUrl = 'https://sall2k2wjb.execute-api.us-west-2.amazonaws.com/prod';
+    var invokeUrl = 'https://1yp2obcfme.execute-api.us-west-2.amazonaws.com/prod';
     var endpoint = /(^https?:\/\/[^\/]+)/g.exec(invokeUrl)[1];
     var pathComponent = invokeUrl.substring(endpoint.length);
 
@@ -81,6 +81,24 @@ apigClientFactory.newClient = function (config) {
 
     var apiGatewayClient = apiGateway.core.apiGatewayClientFactory.newClient(simpleHttpClientConfig, sigV4ClientConfig);
     
+    
+    
+    apigClient.rootGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var rootGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(rootGetRequest, authType, additionalParams, config.apiKey);
+    };
     
     
     apigClient.permissionsGet = function (params, body, additionalParams) {
@@ -145,8 +163,8 @@ apigClientFactory.newClient = function (config) {
         var permissionsDeleteRequest = {
             verb: 'delete'.toUpperCase(),
             path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
@@ -155,34 +173,106 @@ apigClientFactory.newClient = function (config) {
     };
     
     
-    apigClient.permissionsOptions = function (params, body, additionalParams) {
+    apigClient.petsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['type', 'page'], ['body']);
         
-        var permissionsOptionsRequest = {
-            verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+        var petsGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['type', 'page']),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(petsGetRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.petsPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
+        
+        var petsPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(permissionsOptionsRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(petsPostRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.petsOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var petsOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(petsOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.petsPetIdGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['petId'], ['body']);
+        
+        var petsPetIdGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/pets/{petId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['petId'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(petsPetIdGetRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.petsPetIdOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['petId'], ['body']);
+        
+        var petsPetIdOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/pets/{petId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['petId'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(petsPetIdOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
     
     apigClient.projectsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
         var projectsGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/projects').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
@@ -194,13 +284,13 @@ apigClientFactory.newClient = function (config) {
     apigClient.projectsPut = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['projectId'], ['body']);
         
         var projectsPutRequest = {
             verb: 'put'.toUpperCase(),
             path: pathComponent + uritemplate('/projects').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['projectId']),
             body: body
         };
         
@@ -230,13 +320,13 @@ apigClientFactory.newClient = function (config) {
     apigClient.projectsDelete = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['projectId'], ['body']);
         
         var projectsDeleteRequest = {
             verb: 'delete'.toUpperCase(),
             path: pathComponent + uritemplate('/projects').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['projectId']),
             body: body
         };
         
