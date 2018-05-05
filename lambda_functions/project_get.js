@@ -19,7 +19,7 @@ exports.getItem = function(event, context, callback) {
                     }
                 }
             }
-            dynamodb.deleteItem(params, function(err, data) {
+            dynamodb.getItem(params, function(err, data) {
                 if (err) console.log(err, err.stack);
                 else     {
                     console.log(data);
@@ -57,3 +57,4 @@ exports.getItem = function(event, context, callback) {
 	}
 }
 
+   

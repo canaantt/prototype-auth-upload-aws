@@ -54,6 +54,11 @@
         
         <script>
             // Initialize the Amazon Cognito credentials provider
+            const userPoolId = 'us-west-2_LEfNJo2J7';
+            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
+            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
+            const api_gateway_url_projects = 'https://1yp2obcfme.execute-api.us-west-2.amazonaws.com/prod/projects';
+            const bucket_name = 'user-data-oncoscape';
             const poolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolClientId
@@ -95,11 +100,11 @@
                     user['aws'] = AWS.config.credentials.data.Credentials;
                     user['IdentityId'] = AWS.config.credentials.cognito.config.params.IdentityId;
                     apigClient = apigClientFactory.newClient({
-                                accessKey: AWS.config.credentials.accessKeyId,
-                                secretKey: AWS.config.credentials.secretAccessKey,
-                                sessionToken: AWS.config.credentials.sessionToken,
-                                region: 'us-west-2'
-                            });
+                                    accessKey: AWS.config.credentials.accessKeyId,
+                                    secretKey: AWS.config.credentials.secretAccessKey,
+                                    sessionToken: AWS.config.credentials.sessionToken,
+                                    region: 'us-west-2'
+                                });
                 }); 
             };
 
@@ -162,31 +167,19 @@
                     });
             };
 
-            function listAllDatasets(userId) {
-                console.log("function listAllDatasets is being called......");
-                var additionalParams = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    queryParams: {}
-                };
-                apigClient.projectsGet({}, {'userId': userId}, additionalParams)
-                    .then(function(result){
-                        console.log('++++', result);
-                    }).catch( function(result){
-                        console.log('catch +++', result);
-                    });
+            function listAllDatasets() {
+                
             }
 
             function listOneDataset(projectId) {
                 console.log("function listOneDataset is being called......");
+                console.log(projectId);
                 var additionalParams = {
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    queryParams: {}
+                    }
                 };
-                apigClient.projectsGet({}, {'projectId': projectId}, additionalParams)
+                apigClient.projectsGet({'projectId': projectId}, {}, additionalParams)
                     .then(function(result){
                         console.log('++++', result);
                     }).catch( function(result){
@@ -202,7 +195,7 @@
                     },
                     queryParams: {}
                 };
-                apigClient.projectsProjectIdDelete({}, {"projectId": projectId}, additionalParams)
+                apigClient.projectsDelete({"projectId": projectId}, {}, additionalParams)
                     .then(function(result){
                         console.log('++++', result);
                     }).catch( function(result){
@@ -210,12 +203,20 @@
                     });
             }
 
-            function updateDataset() {
-
-            };
-
-            function deleteDataset() {
-
+            function updateDataset(project) {
+                console.log("function deleteDataset is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.projectsPut({"projectId": projectId}, {}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
             };
             
             function addNewPermission() {

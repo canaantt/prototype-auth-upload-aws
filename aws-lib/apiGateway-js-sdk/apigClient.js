@@ -173,106 +173,16 @@ apigClientFactory.newClient = function (config) {
     };
     
     
-    apigClient.petsGet = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, ['type', 'page'], ['body']);
-        
-        var petsGetRequest = {
-            verb: 'get'.toUpperCase(),
-            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['type', 'page']),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(petsGetRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
-    apigClient.petsPost = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
-        
-        var petsPostRequest = {
-            verb: 'post'.toUpperCase(),
-            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(petsPostRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
-    apigClient.petsOptions = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
-        
-        var petsOptionsRequest = {
-            verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/pets').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(petsOptionsRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
-    apigClient.petsPetIdGet = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, ['petId'], ['body']);
-        
-        var petsPetIdGetRequest = {
-            verb: 'get'.toUpperCase(),
-            path: pathComponent + uritemplate('/pets/{petId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['petId'])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(petsPetIdGetRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
-    apigClient.petsPetIdOptions = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, ['petId'], ['body']);
-        
-        var petsPetIdOptionsRequest = {
-            verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/pets/{petId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['petId'])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(petsPetIdOptionsRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
     apigClient.projectsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['projectId'], ['body']);
         
         var projectsGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/projects').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['projectId']),
             body: body
         };
         
