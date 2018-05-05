@@ -194,13 +194,13 @@ apigClientFactory.newClient = function (config) {
     apigClient.projectsPut = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['projectId'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
         var projectsPutRequest = {
             verb: 'put'.toUpperCase(),
             path: pathComponent + uritemplate('/projects').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['projectId']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         

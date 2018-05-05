@@ -27,7 +27,11 @@ exports.updateItemById = function(event, context, callback){
 	if('identity' in context && 'cognitoIdentityId' in context['identity']) {
 		console.log('printing out context',  context['identity']['cognitoIdentityId']);
         var received_data = JSON.parse(event.body);
+        console.log('received_data =>', received_data);
+        console.log('received_data._id.S =>', received_data['_id']['S']);
         var keys = Object.keys(received_data);
+        keys.splice(keys.indexOf('_id'), 1);
+        console.log('after splice, keys: ', keys);
         var attributeUpdatesObj = {};
         keys.forEach(k =>{
             if (received_data[k] == "" || received_data[k] == null) {
@@ -47,7 +51,7 @@ exports.updateItemById = function(event, context, callback){
                         } else {
                             attributeUpdatesObj[k + "." + sk] = {
                                 Action: "PUT", 
-                                Value: received_data[k][sk]
+                                Value: received_data[k][sk][Object.keys(received_data[k][sk])[0]]
                             }
                         };
                     });
@@ -66,7 +70,7 @@ exports.updateItemById = function(event, context, callback){
         var params = {
             TableName:process.env.TABLE_NAME,
             Key:{
-                "_id": event['projectId']
+                "_id": received_data['_id']['S']
             },
             AttributeUpdates: attributeUpdatesObj,
             TableName: process.env.TABLE_NAME,

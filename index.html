@@ -171,6 +171,7 @@
                 
             }
 
+            var project = {};
             function listOneDataset(projectId) {
                 console.log("function listOneDataset is being called......");
                 console.log(projectId);
@@ -182,6 +183,7 @@
                 apigClient.projectsGet({'projectId': projectId}, {}, additionalParams)
                     .then(function(result){
                         console.log('++++', result);
+                        project = result;
                     }).catch( function(result){
                         console.log('catch +++', result);
                     });
@@ -211,7 +213,7 @@
                     },
                     queryParams: {}
                 };
-                apigClient.projectsPut({"projectId": projectId}, {}, additionalParams)
+                apigClient.projectsPut({}, project, additionalParams)
                     .then(function(result){
                         console.log('++++', result);
                     }).catch( function(result){
