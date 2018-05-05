@@ -77,11 +77,16 @@ exports.updateItemById = function(event, context, callback){
             ReturnValues: 'ALL_NEW'
         };
         documentClient.update(params, function(err, data) {
-            if (err) {
-                console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-            } else {
-                console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
-            }
+            var response = {
+                'statusCode': 200,
+                'headers': { 
+                    'Access-Control-Allow-Origin' : '*',
+                    // 'Access-Control-Allow-Credentials' : true,
+                    'Content-Type': 'application/json' 
+                },
+                'body': JSON.stringify(data)
+            };
+            callback(err, response);
         });
     } else {
         callback(null, {
