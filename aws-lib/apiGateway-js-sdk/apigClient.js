@@ -83,34 +83,16 @@ apigClientFactory.newClient = function (config) {
     
     
     
-    apigClient.rootGet = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
-        
-        var rootGetRequest = {
-            verb: 'get'.toUpperCase(),
-            path: pathComponent + uritemplate('/').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(rootGetRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
     apigClient.permissionsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['permissionId'], ['body']);
         
         var permissionsGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['permissionId']),
             body: body
         };
         
@@ -158,18 +140,36 @@ apigClientFactory.newClient = function (config) {
     apigClient.permissionsDelete = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['permissionId'], ['body']);
         
         var permissionsDeleteRequest = {
             verb: 'delete'.toUpperCase(),
             path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, ['id']),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['permissionId']),
             body: body
         };
         
         
         return apiGatewayClient.makeRequest(permissionsDeleteRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.permissionsOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var permissionsOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(permissionsOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
     

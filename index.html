@@ -145,33 +145,42 @@
                             "datasetProtocolId": "<FH7776>",
                             "datasetPublic": false
                         };
-                        addNewDataset(dataset_metadata);
+                        addNewDataset(dataset_metadata).then(function(data){
+                            console.log('Am I here? ', data);
+                            var ownerPermission = {
+                                permissionProjectId: data.data,
+                                permissionUserId: user.IdentityId,
+                                permissionType: 'ADMIN'
+                            };
+                            addNewPermission(ownerPermission);
+                        });
                     }
                 });
             };
             input_dom_element.addEventListener('change', upload2S3, false);
 
             function addNewDataset(data) {
-                console.log("function addNewDataset is being called......");
-                var additionalParams = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    queryParams: {}
-                };
-                apigClient.projectsPost({}, data, additionalParams)
-                    .then(function(result){
-                        console.log('++++', result);
-                    }).catch( function(result){
-                        console.log('catch +++', result);
-                    });
+                return new Promise((resolve, reject) => { 
+                    console.log("function addNewDataset is being called......");
+                    var additionalParams = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        queryParams: {}
+                    };
+                    apigClient.projectsPost({}, data, additionalParams)
+                        .then(function(result){
+                            console.log('++++', result);
+                            resolve(result);
+                        }).catch( function(result){
+                            console.log('catch +++', result);
+                            reject(result);
+                        });
+                });
             };
 
-            function listAllDatasets() {
-                
-            }
-
             var project = {};
+
             function listOneDataset(projectId) {
                 console.log("function listOneDataset is being called......");
                 console.log(projectId);
@@ -221,17 +230,74 @@
                     });
             };
             
-            function addNewPermission() {
-
+            function addNewPermission(data) {
+                console.log("function addNewDataset is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                console.log('within addNewPermission function: ', data);
+                apigClient.permissionsPost({}, data, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
             };
 
-            function updatePermission() {
-
+            function deletePermission(permissionId) {
+                console.log("function deletePermission is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                console.log('received permissionId is: ', permissionId);
+                apigClient.permissionsDelete({"permissionId": permissionId}, {}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
             };
 
-            function deletePermission() {
+            function listOnePermission(permissionId) {
+                console.log("function listOnePermission is being called......");
+                console.log(permissionId);
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                apigClient.permissionsGet({'permissionId': permissionId}, {}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                        project = result;
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            }
 
+            function updatePermission(permission) {
+                console.log("function updatePermission is being called......");
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    queryParams: {}
+                };
+                apigClient.permissionsPut({}, permission, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
             };
+
+            
 
         </script>
     </body>

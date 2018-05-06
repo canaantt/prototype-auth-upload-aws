@@ -4,25 +4,25 @@ var AWS = require('aws-sdk');
 var dynamodb = new AWS.DynamoDB;
 
 
-exports.deleteDataset = function(event, context, callback) {
+exports.getItem = function(event, context, callback) {
 	console.log('identity' in context);
 	if( 'identity' in context && 'cognitoIdentityId' in context['identity']) {
         console.log('context.identity.cognitoIdentityId: ', context.identity.cognitoIdentityId);
         var result;
         console.log("====> ", event);
-        if ( 'projectId' in event['queryStringParameters']) {
+        if ( 'permissionId' in event['queryStringParameters']) {
             var params = {
                 TableName: process.env.TABLE_NAME,
                 Key : { 
                     "_id" : {
-                        "S" : event['queryStringParameters']['projectId']
+                        "S" : event['queryStringParameters']['permissionId']
                     }
                 }
             }
-            dynamodb.deleteItem(params, function(err, data) {
+            dynamodb.getItem(params, function(err, data) {
                 if (err) console.log(err, err.stack);
-                else     {
-                    console.log(data);
+                else {
+                    console.log('==>', data);
                     result = data;
                     var response = {
                         'statusCode': 200,
@@ -38,8 +38,10 @@ exports.deleteDataset = function(event, context, callback) {
         } else {
             var response = {
                 'statusCode': 404,
-                'headers': { 'Access-Control-Allow-Origin' : '*',
-                            'Content-Type': 'application/json' },
+                'headers': { 
+                    'Access-Control-Allow-Origin' : '*',
+                    'Content-Type': 'application/json' 
+                },
                 'body': JSON.stringify('event error')
                 };
             callback(null, response);
@@ -49,11 +51,11 @@ exports.deleteDataset = function(event, context, callback) {
 			'statusCode': 400,
         	'headers': { 
         			'Access-Control-Allow-Origin' : '*',
-    				// 'Access-Control-Allow-Credentials' : true,
     				'Content-Type': 'application/json' 
         		},
-        		'body': JSON.stringify('No Identity was passed from API Gateway')
+        	'body': JSON.stringify('No Identity was passed from API Gateway')
 		});
 	}
 }
 
+   

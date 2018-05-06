@@ -14,7 +14,8 @@ export interface Project {
 
 export interface Permission {
    permissionProjectId: string;
-   permissionEmail: string;
+//    permissionEmail: string;
+   permissionUserId: string;
    permissionType: string; // ADMIN / READONLY
 }
 
