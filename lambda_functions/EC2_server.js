@@ -110,7 +110,7 @@ var getScan = function(filename) {
     var docClient = new AWS.DynamoDB.DocumentClient();
     var params = {
         TableName: 'Account_Projects',
-        FilterExpression: 'DatasetFile_filename = :fn',
+        FilterExpression: 'datasetFileName = :fn',
         ExpressionAttributeValues: {
             ':fn': filename
             }

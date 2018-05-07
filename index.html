@@ -49,9 +49,13 @@
         </div>
         <div class="well">
             <h1>Upload File</h1>
-            <input type='file' id='input_dom_element'></input>
+            <input type='file' id='upload'></input>
         </div>
-        
+        <div class="well">
+            <h1>Upload File</h1>
+            <input type='file' id='remove'></input>
+        </div>
+
         <script>
             // Initialize the Amazon Cognito credentials provider
             const userPoolId = 'us-west-2_LEfNJo2J7';
@@ -157,8 +161,15 @@
                     }
                 });
             };
-            input_dom_element.addEventListener('change', upload2S3, false);
+            upload.addEventListener('change', upload2S3, false);
 
+            function deleteFile() {
+                /* remove dataset, which is the folder of processed s3 bucket
+                   remove all the permissions associated with dataset
+                */
+            };
+
+            remove.addEventListener('change', deleteFile, false);
             function addNewDataset(data) {
                 return new Promise((resolve, reject) => { 
                     console.log("function addNewDataset is being called......");
