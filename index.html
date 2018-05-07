@@ -264,21 +264,25 @@
                     });
             };
 
+            function listAllPermissions() {
+                return new Promise((resolve, reject) => { 
+                    var additionalParams = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    apigClient.permissionsGet({}, {}, additionalParams)
+                        .then(function(result){
+                            console.log('++++', result);
+                            resolve(result);
+                        }).catch( function(result){
+                            console.log('catch +++', result);
+                            reject(result)
+                        });
+                });
+            }
             function listOnePermission(permissionId) {
-                console.log("function listOnePermission is being called......");
-                console.log(permissionId);
-                var additionalParams = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
-                apigClient.permissionsGet({'permissionId': permissionId}, {}, additionalParams)
-                    .then(function(result){
-                        console.log('++++', result);
-                        project = result;
-                    }).catch( function(result){
-                        console.log('catch +++', result);
-                    });
+                
             }
 
             function updatePermission(permission) {
@@ -292,40 +296,6 @@
                 apigClient.permissionsPut({}, permission, additionalParams)
                     .then(function(result){
                         console.log('++++', result);
-                    }).catch( function(result){
-                        console.log('catch +++', result);
-                    });
-            };
-
-            function listAllDatasets(userId) {
-                console.log("function listAllDatasets is being called......");
-                console.log(userId);
-                var additionalParams = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
-                apigClient.permissionsGet({'userId': userId }, {}, additionalParams)
-                    .then(function(result){
-                        console.log('++++', result);
-                        project = result;
-                    }).catch( function(result){
-                        console.log('catch +++', result);
-                    });
-            };
-
-            function listAllUsers(projectId) {
-                console.log("function listAllUsers is being called......");
-                console.log(projectId);
-                var additionalParams = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
-                apigClient.permissionsGet({'projectId': projectId}, {}, additionalParams)
-                    .then(function(result){
-                        console.log('++++', result);
-                        project = result;
                     }).catch( function(result){
                         console.log('catch +++', result);
                     });

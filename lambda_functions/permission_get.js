@@ -10,40 +10,26 @@ exports.getItem = function(event, context, callback) {
         console.log('context.identity.cognitoIdentityId: ', context.identity.cognitoIdentityId);
         var result;
         console.log("====> ", event);
-        if ( 'permissionId' in event['queryStringParameters']) {
+        
             var params = {
-                TableName: process.env.TABLE_NAME,
-                Key : { 
-                    "_id" : {
-                        "S" : event['queryStringParameters']['permissionId']
-                    }
-                }
+                TableName: process.env.TABLE_NAME
             }
-            dynamodb.getItem(params, function(err, data) {
-                if (err) console.log(err, err.stack);
+            dynamodb.scan(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
                 else     {
-                    console.log(data);
-                    result = data;
+                    console.log(data);           // successful response
                     var response = {
                         'statusCode': 200,
                         'headers': { 
                             'Access-Control-Allow-Origin' : '*',
                             'Content-Type': 'application/json' 
                         },
-                        'body': JSON.stringify(result)
+                        'body': JSON.stringify(data)
                     };
                     callback(null, response);
                 }
             });
-        } else {
-            var response = {
-                'statusCode': 404,
-                'headers': { 'Access-Control-Allow-Origin' : '*',
-                            'Content-Type': 'application/json' },
-                'body': JSON.stringify('event error')
-                };
-            callback(null, response);
-        }	
+
 	} else {
 		callback(null, {
 			'statusCode': 400,
