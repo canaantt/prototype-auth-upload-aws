@@ -86,13 +86,13 @@ apigClientFactory.newClient = function (config) {
     apigClient.permissionsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['permissionId'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
         
         var permissionsGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/permissions').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['permissionId']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['id']),
             body: body
         };
         

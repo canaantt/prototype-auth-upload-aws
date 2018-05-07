@@ -297,7 +297,42 @@
                     });
             };
 
+            function listAllDatasets(userId) {
+                console.log("function listAllDatasets is being called......");
+                console.log(userId);
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                apigClient.permissionsGet({'userId': userId }, {}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                        project = result;
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            };
+
+            function listAllUsers(projectId) {
+                console.log("function listAllUsers is being called......");
+                console.log(projectId);
+                var additionalParams = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                apigClient.permissionsGet({'projectId': projectId}, {}, additionalParams)
+                    .then(function(result){
+                        console.log('++++', result);
+                        project = result;
+                    }).catch( function(result){
+                        console.log('catch +++', result);
+                    });
+            };
+            /*
             
+            */
 
         </script>
     </body>
