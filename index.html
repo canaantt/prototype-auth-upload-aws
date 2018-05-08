@@ -58,6 +58,16 @@
 
         <script>
             // Initialize the Amazon Cognito credentials provider
+            const userPoolId = 'us-west-2_LEfNJo2J7';
+            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
+            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
+            const api_gateway_url_projects = 'https://1yp2obcfme.execute-api.us-west-2.amazonaws.com/prod/projects';
+            const bucket_name = 'user-data-oncoscape';
+            const poolData = {
+                UserPoolId: userPoolId,
+                ClientId: userPoolClientId
+            };
+            AWS.config.region = 'us-west-2';  
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
@@ -124,7 +134,8 @@
                 bucket.upload(params).on('httpUploadProgress', function(evt) {
                     console.log("Uploaded :: " + parseInt((evt.loaded * 100) / evt.total)+'%');
                 }).send(function(err, data) {
-                    alert("File uploaded successfully.");
+                    // alert("File uploaded successfully.");
+                    console.log('File uploaded successfully.');
                     console.log('success!');
                         var dataset_metadata = {
                             "datsetName": "<DatasetName>",
@@ -139,7 +150,6 @@
                             "datasetPublic": false
                         };
                         addNewDataset(dataset_metadata).then(function(data){
-                            console.log('Am I here? ', data);
                             var ownerPermission = {
                                 permissionProjectId: data.data,
                                 permissionUserId: user.IdentityId,
@@ -148,34 +158,6 @@
                             addNewPermission(ownerPermission);
                         });
                 });
-                // bucket.putObject(params, function (err, data) {
-                //     if (err) {
-                //         console.log(err);
-                //     } else {
-                //         console.log('success!');
-                //         var dataset_metadata = {
-                //             "datsetName": "<DatasetName>",
-                //             "datasetDesc": "<Description>",
-                //             "datasetOwnerId": user.IdentityId,
-                //             "datasetFileSize": file.size,
-                //             "datasetFileName": params.Key,
-                //             "datasetContainsPhi": false,
-                //             "datasetContainsHumanSubjects": true,
-                //             "datasetProtocolType": "<IRB>", 
-                //             "datasetProtocolId": "<FH7776>",
-                //             "datasetPublic": false
-                //         };
-                //         addNewDataset(dataset_metadata).then(function(data){
-                //             console.log('Am I here? ', data);
-                //             var ownerPermission = {
-                //                 permissionProjectId: data.data,
-                //                 permissionUserId: user.IdentityId,
-                //                 permissionType: 'ADMIN'
-                //             };
-                //             addNewPermission(ownerPermission);
-                //         });
-                //     }
-                // });
             };
             upload.addEventListener('change', upload2S3, false);
 
