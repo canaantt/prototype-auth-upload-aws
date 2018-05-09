@@ -58,6 +58,16 @@
 
         <script>
             // Initialize the Amazon Cognito credentials provider
+            const userPoolId = 'us-west-2_LEfNJo2J7';
+            const userPoolClientId = 's2079evlihhrrg07mmcit0alm';
+            const userIdentityId = 'us-west-2:1860ae0e-6343-4afb-a0c2-5bddd99a1be6';
+            const api_gateway_url_projects = 'https://1yp2obcfme.execute-api.us-west-2.amazonaws.com/prod/projects';
+            const bucket_name = 'user-data-oncoscape';
+            const poolData = {
+                UserPoolId: userPoolId,
+                ClientId: userPoolClientId
+            };
+            AWS.config.region = 'us-west-2';  
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                 IdentityPoolId: userIdentityId
             });
@@ -299,6 +309,24 @@
 
             function listOnePermission(permissionId) {
                 
+            }
+
+            function listPermissionsByProject(projectId) {
+                return new Promise((resolve, reject) => { 
+                    var additionalParams = {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    apigClient.permissionsProjectIdGet({'projectId': projectId}, {}, additionalParams)
+                              .then(function(result){
+                                    console.log('++++', result);
+                                    resolve(result);
+                                }).catch( function(result){
+                                    console.log('catch +++', result);
+                                    reject(result)
+                                });
+                });
             }
 
             function updatePermission(permission) {

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM node:6
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -14,21 +14,16 @@ RUN apt-get install -y python3-pip && \
 RUN pip3 install awscli
 
 
-COPY /server /home/server
+COPY /server .
 
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
-RUN apt-get -y -qq install nodejs
+# RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+# RUN apt-get -y -qq install nodejs
 RUN npm install -g pm2
 RUN npm install
 
 # EXPOSE 80
 # pm2 start my_app.js --node-args="--max-old-space-size=7000"  
-CMD ["bash"]
-# CMD ["node", "/home/server/EC2_server.js", "--max-old-space-size=7000"]
-# && \
-# git clone https://github.com/canaantt/Python
-# RUN mkdir Python
-# COPY ./ Python
-# Start
-# EXPOSE 80
-# CMD ["python3", "Python/api.py"]
+
+CMD ["node", "EC2_server.js", "--max-old-space-size=7000"]
+# CMD ["pm2", "start", "EC2_server.js"]
+

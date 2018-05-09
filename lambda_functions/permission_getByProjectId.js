@@ -8,10 +8,10 @@ exports.getItem = function(event, context, callback) {
 	console.log('identity' in context);
 	if( 'identity' in context && 'cognitoIdentityId' in context['identity']) {
         console.log('context.identity.cognitoIdentityId: ', context.identity.cognitoIdentityId);
-        // var userId = context.identity.cognitoIdentityId;
         var result;
         console.log("====> ", event);
-        console.log("???? has projectId passed in? ", event['queryStringParameters']);
+        var projectId = event['path'].split("/")[2];
+        console.log("projectId is: ", projectId);
         var params = {
             TableName: process.env.TABLE_NAME
         }
@@ -19,14 +19,15 @@ exports.getItem = function(event, context, callback) {
             if (err) console.log(err, err.stack);
             else     {
                 console.log(data);
-                // var result = data.filter(d=>)
+                var result = data['Items'].filter(d=>d['permissionProjectId']['S'] === projectId);
+                
                 var response = {
                     'statusCode': 200,
                     'headers': { 
                         'Access-Control-Allow-Origin' : '*',
                         'Content-Type': 'application/json' 
                     },
-                    'body': JSON.stringify(data)
+                    'body': JSON.stringify(result)
                 };
                 callback(null, response);
             }

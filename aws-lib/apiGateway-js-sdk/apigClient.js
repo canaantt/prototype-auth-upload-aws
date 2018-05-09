@@ -173,6 +173,42 @@ apigClientFactory.newClient = function (config) {
     };
     
     
+    apigClient.permissionsProjectIdGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['projectId'], ['body']);
+        
+        var permissionsProjectIdGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/permissions/{projectId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['projectId'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(permissionsProjectIdGetRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.permissionsProjectIdOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var permissionsProjectIdOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/permissions/{projectId}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(permissionsProjectIdOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
     apigClient.projectsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
